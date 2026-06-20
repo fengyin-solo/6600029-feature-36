@@ -21,6 +21,7 @@ export const useDroneStore = defineStore('drone', () => {
   const isSimulating = ref(false);
   const simProgress = ref(0);
   const mapCenter = ref<[number, number]>([39.9, 116.4]);
+  const hoveredProfileIndex = ref<number | null>(null);
 
   const droneConfig = ref<DroneConfig>({
     maxAltitude: 500,
@@ -68,6 +69,11 @@ export const useDroneStore = defineStore('drone', () => {
     waypoints.value = [];
     currentPlan.value = null;
     simProgress.value = 0;
+    hoveredProfileIndex.value = null;
+  }
+
+  function setHoveredProfileIndex(index: number | null) {
+    hoveredProfileIndex.value = index;
   }
 
   function updatePlan() {
@@ -156,6 +162,7 @@ export const useDroneStore = defineStore('drone', () => {
     isSimulating,
     simProgress,
     mapCenter,
+    hoveredProfileIndex,
     totalDistance,
     estimatedTime,
     batteryPercent,
@@ -169,5 +176,6 @@ export const useDroneStore = defineStore('drone', () => {
     loadMockData,
     exportPlan,
     updatePlan,
+    setHoveredProfileIndex,
   };
 });

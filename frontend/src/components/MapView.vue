@@ -11,6 +11,7 @@ let waypointLayer: L.LayerGroup | null = null;
 let routeLayer: L.Polyline | null = null;
 let zoneLayer: L.LayerGroup | null = null;
 let droneMarker: L.CircleMarker | null = null;
+let hoverMarker: L.CircleMarker | null = null;
 
 const addMode = ref(false);
 
@@ -132,6 +133,31 @@ function drawSimDrone() {
   }
 }
 
+function drawHoverMarker() {
+  if (!map) return;
+  const idx = store.hoveredProfileIndex;
+  if (idx === null || !store.waypoints[idx]) {
+    if (hoverMarker) {
+      map.removeLayer(hoverMarker);
+      hoverMarker = null;
+    }
+    return;
+  }
+
+  const wp = store.waypoints[idx];
+  if (hoverMarker) {
+    hoverMarker.setLatLng([wp.lat, wp.lng]);
+  } else {
+    hoverMarker = L.circleMarker([wp.lat, wp.lng], {
+      radius: 14,
+      color: '#fbbf24',
+      fillColor: '#fbbf24',
+      fillOpacity: 0.4,
+      weight: 3,
+    }).addTo(map);
+  }
+}
+
 watch(() => store.waypoints.length, () => {
   drawWaypoints();
   drawRoute();
@@ -139,6 +165,8 @@ watch(() => store.waypoints.length, () => {
 
 watch(() => store.noFlyZones.length, drawNoFlyZones);
 watch(() => store.simProgress, drawSimDrone);
+watch(() => store.hoveredProfileIndex, drawHoverMarker);
+watch(() => store.waypoints, drawHoverMarker, { deep: true });
 
 onMounted(() => {
   nextTick(initMap);
